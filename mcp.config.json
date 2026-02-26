@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+    "agencyflow-internal": {
+      "command": "python",
+      "args": ["backend/mcp_client.py"],
+      "env": {
+        "INTERNAL_API_KEY": "${INTERNAL_API_KEY}"
+      }
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "env": {}
+    },
+    "deepresearch": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/deep-research-mcp"],
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}"
+      }
+    },
+    "storm": {
+      "command": "npx",
+      "args": ["-y", "@stanford/storm-mcp"],
+      "env": {}
+    },
+    "firebase": {
+      "command": "npx",
+      "args": ["-y", "firebase-tools@latest", "experimental:mcp"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "${FIREBASE_SERVICE_ACCOUNT_PATH}"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}

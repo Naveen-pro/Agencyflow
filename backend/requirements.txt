@@ -1,0 +1,43 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.12
+python-dotenv>=1.0.1
+
+# Neon PostgreSQL
+asyncpg>=0.29.0
+sqlalchemy[asyncio]>=2.0.35
+alembic>=1.13.0
+
+# Firebase
+firebase-admin>=6.5.0
+
+# AI providers
+groq>=0.11.0
+google-generativeai>=0.8.0
+openai>=1.51.0
+cohere>=5.11.0
+huggingface-hub>=0.25.0
+httpx>=0.27.0
+
+# Payments
+razorpay>=1.4.0
+
+# Rate limiting
+slowapi>=0.1.9
+
+# Redis
+redis>=5.1.0
+
+# Blog/RSS
+feedparser>=6.0.11
+
+# Twilio Voice
+twilio>=9.3.0
+
+# Validation
+pydantic>=2.9.0
+email-validator>=2.2.0
+
+# Testing
+pytest>=8.3.0
+pytest-asyncio>=0.23.0

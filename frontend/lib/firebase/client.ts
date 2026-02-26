@@ -11,8 +11,18 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app: FirebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-const auth: Auth = getAuth(app);
+// Only initialize Firebase on the client side (not during SSR/build) to avoid issues
+let app: FirebaseApp;
+let auth: Auth;
+
+if (typeof window !== "undefined") {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+    auth = getAuth(app);
+} else {
+    // Server-side: ensure we have a valid initialization to avoid errors during static generation
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+    auth = getAuth(app);
+}
 
 export { auth };
 export default app;

@@ -79,12 +79,26 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         os.getenv("FRONTEND_URL", "http://localhost:3000"),
+        "http://localhost:3001",
         "https://agencyflow.vercel.app",
+        "https://agencyflow-hi0l.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# ─── Root ────────────────────────────────────────────────────
+
+@app.get("/")
+async def root():
+    return {
+        "name": "AgencyFlow API",
+        "version": "1.0.0",
+        "docs": "/docs",
+        "health": "/health",
+    }
 
 
 # ─── Health ──────────────────────────────────────────────────

@@ -1,69 +1,71 @@
 """
-WhatsApp channel — WAHA (self-hosted WhatsApp Web API).
+AgencyFlow WhatsApp Channel
+Calls YOUR OWN WhatsApp API (no WAHA, no Twilio — 100% free)
 """
-import os
-import logging
+
 import httpx
-from dotenv import load_dotenv
+import os
+from typing import List, Dict
 
-load_dotenv()
-logger = logging.getLogger(__name__)
+WA_API_URL = os.getenv("WA_API_URL", "http://localhost:7002")
+WA_API_KEY = os.getenv("WA_API_KEY", "")
 
-WAHA_URL = os.getenv("WAHA_URL", "http://localhost:3001")
-
-
-async def send_whatsapp(phone: str, message: str, media_url: str = None) -> dict:
-    """
-    Send WhatsApp message via WAHA.
-    Returns {success, message_id, error}.
-    """
-    chat_id = f"{phone.replace('+', '')}@c.us"
-
-    try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            if media_url:
-                resp = await client.post(
-                    f"{WAHA_URL}/api/sendImage",
-                    json={
-                        "chatId": chat_id,
-                        "caption": message,
-                        "file": {"url": media_url},
-                        "session": "default",
-                    },
-                )
-            else:
-                resp = await client.post(
-                    f"{WAHA_URL}/api/sendText",
-                    json={
-                        "chatId": chat_id,
-                        "text": message,
-                        "session": "default",
-                    },
-                )
-
-            resp.raise_for_status()
-            data = resp.json()
-            return {
-                "success": True,
-                "message_id": data.get("id", ""),
-                "error": None,
-            }
-    except Exception as e:
-        logger.error(f"WhatsApp send failed: {e}")
-        return {"success": False, "message_id": None, "error": str(e)}
-
+HEADERS = {
+    "x-api-key":    WA_API_KEY,
+    "Content-Type": "application/json",
+}
 
 async def get_status() -> dict:
-    """Check WAHA connection status."""
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            resp = await client.get(f"{WAHA_URL}/api/sessions/default")
-            resp.raise_for_status()
-            data = resp.json()
-            return {
-                "connected": data.get("status") == "WORKING",
-                "phone": data.get("me", {}).get("id", ""),
-                "qr_code": None,
-            }
-    except Exception:
-        return {"connected": False, "phone": None, "qr_code": None}
+    """Check WhatsApp connection status"""
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        resp = await client.get(f"{WA_API_URL}/status")
+        return resp.json()
+
+async def get_qr_code() -> dict:
+    """Get QR code for WhatsApp login"""
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        resp = await client.get(f"{WA_API_URL}/qr")
+        return resp.json()
+
+async def send_whatsapp(phone: str, message: str, campaign_id: str = None) -> dict:
+    """Send single WhatsApp message"""
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.post(
+            f"{WA_API_URL}/send",
+            json={"phone": phone, "message": message, "campaign_id": campaign_id},
+            headers=HEADERS,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+async def send_whatsapp_image(phone: str, image_url: str, caption: str = "") -> dict:
+    """Send WhatsApp message with image"""
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.post(
+            f"{WA_API_URL}/send-image",
+            json={"phone": phone, "image_url": image_url, "caption": caption},
+            headers=HEADERS,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+async def start_bulk_campaign(
+    campaign_id: str,
+    contacts: List[Dict],
+    message: str,
+    delay_ms: int = 3000,
+) -> dict:
+    """Start bulk WhatsApp campaign"""
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.post(
+            f"{WA_API_URL}/send-bulk",
+            json={
+                "campaign_id": str(campaign_id),
+                "contacts":    contacts,
+                "message":     message,
+                "delay_ms":    delay_ms,
+            },
+            headers=HEADERS,
+        )
+        resp.raise_for_status()
+        return resp.json()

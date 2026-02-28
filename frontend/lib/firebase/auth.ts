@@ -13,8 +13,8 @@ import {
     ConfirmationResult,
     User,
 } from "firebase/auth";
-import { auth } from "./client";
-import { apiClient } from "../api";
+import { auth } from "@/lib/firebase/client";
+import { apiClient } from "@/lib/api";
 
 let confirmationResult: ConfirmationResult | null = null;
 

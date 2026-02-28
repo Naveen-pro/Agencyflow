@@ -1,0 +1,7 @@
+node_modules/
+.env
+email_logs.db
+uploads/
+test_contacts.csv
+test_connection.js
+*.log

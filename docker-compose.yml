@@ -27,6 +27,32 @@ services:
       - ./ollama-data:/root/.ollama
     restart: unless-stopped
 
+  gmail-api:
+    build: ./gmail-api
+    ports:
+      - "7003:7003"
+    volumes:
+      - ./gmail-api/email_logs.db:/app/email_logs.db
+    env_file:
+      - ./gmail-api/.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  whatsapp-api:
+    build: ./whatsapp-api
+    ports:
+      - "7002:7002"
+    volumes:
+      - ./whatsapp-api/wa-session:/app/wa-session
+      - ./whatsapp-api/whatsapp_logs.db:/app/whatsapp_logs.db
+    env_file:
+      - ./whatsapp-api/.env
+    depends_on:
+      - redis
+    shm_size: '1gb'
+    restart: unless-stopped
+
   nginx:
     image: nginx:alpine
     ports:
@@ -35,4 +61,6 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - waha
+      - gmail-api
+      - whatsapp-api
     restart: unless-stopped

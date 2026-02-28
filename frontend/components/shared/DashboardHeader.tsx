@@ -3,7 +3,7 @@ import { useAuthStore } from "@/lib/stores/authStore";
 import { logout } from "@/lib/firebase/auth";
 
 export default function DashboardHeader() {
-    const { user } = useAuthStore();
+    const { user, usage } = useAuthStore();
 
     return (
         <header className="h-16 border-b border-border bg-surface/80 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-30">
@@ -14,6 +14,15 @@ export default function DashboardHeader() {
                         {user?.displayName || user?.email || "User"}
                     </span>
                 </h2>
+                {usage && (
+                    <div className="flex items-center gap-3 px-3 py-1 bg-accent/10 rounded-full border border-accent/20">
+                        <span className="text-[10px] text-accent uppercase font-bold tracking-wider">Plan: {usage.plan || "Free"}</span>
+                        <div className="h-3 w-px bg-accent/20" />
+                        <span className="text-xs font-medium text-text-primary">
+                            {usage.sms_used}/{usage.sms_limit} SMS
+                        </span>
+                    </div>
+                )}
             </div>
 
             <div className="flex items-center gap-4">

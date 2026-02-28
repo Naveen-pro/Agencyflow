@@ -39,13 +39,35 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="space-y-3 mb-6">
-                    <button onClick={async () => { await signInWithGoogle(); router.push("/dashboard"); }} disabled={loading}
+                    <button onClick={async () => { 
+                        try {
+                            setLoading(true);
+                            setError("");
+                            await signInWithGoogle(); 
+                            router.push("/dashboard"); 
+                        } catch (err: any) {
+                            setError(err.message);
+                        } finally {
+                            setLoading(false);
+                        }
+                    }} disabled={loading}
                         className="w-full flex items-center justify-center gap-3 py-3 bg-surface border border-border-bright rounded-xl text-sm font-medium hover:border-accent/50 transition-all">
-                        🔵 Sign up with Google
+                        {loading ? "..." : "🔵 Sign up with Google"}
                     </button>
-                    <button onClick={async () => { await signInWithGitHub(); router.push("/dashboard"); }} disabled={loading}
+                    <button onClick={async () => { 
+                        try {
+                            setLoading(true);
+                            setError("");
+                            await signInWithGitHub(); 
+                            router.push("/dashboard"); 
+                        } catch (err: any) {
+                            setError(err.message);
+                        } finally {
+                            setLoading(false);
+                        }
+                    }} disabled={loading}
                         className="w-full flex items-center justify-center gap-3 py-3 bg-surface border border-border-bright rounded-xl text-sm font-medium hover:border-accent/50 transition-all">
-                        ⚫ Sign up with GitHub
+                        {loading ? "..." : "⚫ Sign up with GitHub"}
                     </button>
                 </div>
 

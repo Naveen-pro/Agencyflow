@@ -115,6 +115,7 @@ async def health():
 @app.post("/api/v1/settings/agency", response_model=AgencyResponse)
 async def create_or_update_agency(
     body: AgencyCreate,
+    token: dict = Depends(verify_firebase_token),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -274,17 +275,33 @@ async def upload_csv(
     )
 
 
-@app.get("/api/v1/csv/{upload_id}")
-async def get_csv(
-    upload_id: UUID,
+@app.get("/api/v1/csv/list/{agency_id}")
+async def list_csv_uploads(
+    agency_id: UUID,
+    page: int = 1,
+    per_page: int = 20,
     token: dict = Depends(verify_firebase_token),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(CSVUpload).where(CSVUpload.id == upload_id))
-    upload = result.scalar_one_or_none()
-    if not upload:
-        raise HTTPException(status_code=404, detail="Upload not found")
-    return upload
+    query = (
+        select(CSVUpload)
+        .where(CSVUpload.agency_id == agency_id)
+        .order_by(CSVUpload.created_at.desc())
+        .offset((page - 1) * per_page)
+        .limit(per_page)
+    )
+    result = await db.execute(query)
+    uploads = result.scalars().all()
+    
+    count_query = select(func.count(CSVUpload.id)).where(CSVUpload.agency_id == agency_id)
+    total = (await db.execute(count_query)).scalar()
+    
+    return {
+        "items": uploads,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+    }
 
 
 # ─── AI Enhancement ──────────────────────────────────────────

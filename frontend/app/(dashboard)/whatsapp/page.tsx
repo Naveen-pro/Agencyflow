@@ -6,10 +6,12 @@ import AIEnhanceButton from "@/components/channel/AIEnhanceButton";
 import SendAllButton from "@/components/channel/SendAllButton";
 import DeliveryStatusFeed from "@/components/channel/DeliveryStatusFeed";
 import { useCampaignStore } from "@/lib/stores/campaignStore";
+import { useAuthStore } from "@/lib/stores/authStore";
 import { useEffect } from "react";
 
 export default function WhatsAppPage() {
     const store = useCampaignStore();
+    const { usage } = useAuthStore();
 
     useEffect(() => {
         store.setChannel("whatsapp");
@@ -26,7 +28,9 @@ export default function WhatsAppPage() {
                 <div className="flex items-center gap-3">
                     <div className="bg-surface border border-border rounded-lg px-4 py-2">
                         <span className="text-xs text-text-muted">Usage: </span>
-                        <span className="text-sm font-[family-name:var(--font-mono)] font-medium">12 / 20</span>
+                        <span className="text-sm font-[family-name:var(--font-mono)] font-medium">
+                            {usage?.wa_used ?? 0} / {usage?.wa_limit ?? 0}
+                        </span>
                         <span className="text-xs text-text-muted"> WA this month</span>
                     </div>
                 </div>

@@ -6,10 +6,12 @@ import AIEnhanceButton from "@/components/channel/AIEnhanceButton";
 import SendAllButton from "@/components/channel/SendAllButton";
 import DeliveryStatusFeed from "@/components/channel/DeliveryStatusFeed";
 import { useCampaignStore } from "@/lib/stores/campaignStore";
+import { useAuthStore } from "@/lib/stores/authStore";
 import { useEffect } from "react";
 
 export default function SMSPage() {
     const store = useCampaignStore();
+    const { usage } = useAuthStore();
 
     useEffect(() => {
         store.setChannel("sms");
@@ -27,7 +29,9 @@ export default function SMSPage() {
                 <div className="flex items-center gap-3">
                     <div className="bg-surface border border-border rounded-lg px-4 py-2">
                         <span className="text-xs text-text-muted">Usage: </span>
-                        <span className="text-sm font-[family-name:var(--font-mono)] font-medium">42 / 50</span>
+                        <span className="text-sm font-[family-name:var(--font-mono)] font-medium">
+                            {usage?.sms_used ?? 0} / {usage?.sms_limit ?? 0}
+                        </span>
                         <span className="text-xs text-text-muted"> SMS this month</span>
                     </div>
                     <a href="/billing" className="text-xs text-accent hover:underline">Upgrade →</a>

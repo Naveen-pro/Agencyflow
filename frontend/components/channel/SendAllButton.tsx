@@ -42,10 +42,18 @@ export default function SendAllButton({ channel }: Props) {
             } else if (channel === "whatsapp") {
                 body.message = store.enhancedMessage || store.message;
             } else if (channel === "email") {
-                body.subject = "Campaign - " + new Date().toLocaleDateString();
+                if (!store.subject.trim()) {
+                    alert("Please enter an email subject");
+                    setIsSending(false);
+                    store.setStatus("composing");
+                    return;
+                }
+                body.subject = store.subject;
                 body.body = store.enhancedMessage || store.message;
             } else if (channel === "voice") {
                 body.script = store.enhancedMessage || store.message;
+                body.voice = store.voice;
+                body.speed = store.speed;
             }
 
             const resp = await apiClient.post(`/campaigns/${channel}`, body);

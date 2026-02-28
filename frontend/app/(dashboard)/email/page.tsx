@@ -6,11 +6,12 @@ import AIEnhanceButton from "@/components/channel/AIEnhanceButton";
 import SendAllButton from "@/components/channel/SendAllButton";
 import DeliveryStatusFeed from "@/components/channel/DeliveryStatusFeed";
 import { useCampaignStore } from "@/lib/stores/campaignStore";
+import { useAuthStore } from "@/lib/stores/authStore";
 import { useEffect, useState } from "react";
 
 export default function EmailPage() {
     const store = useCampaignStore();
-    const [subject, setSubject] = useState("");
+    const { usage } = useAuthStore();
 
     useEffect(() => {
         store.setChannel("email");
@@ -26,7 +27,9 @@ export default function EmailPage() {
                 </div>
                 <div className="bg-surface border border-border rounded-lg px-4 py-2">
                     <span className="text-xs text-text-muted">Usage: </span>
-                    <span className="text-sm font-[family-name:var(--font-mono)] font-medium">35 / 50</span>
+                    <span className="text-sm font-[family-name:var(--font-mono)] font-medium">
+                        {usage?.email_used ?? 0} / {usage?.email_limit ?? 0}
+                    </span>
                     <span className="text-xs text-text-muted"> emails this month</span>
                 </div>
             </div>
@@ -45,8 +48,8 @@ export default function EmailPage() {
                         <div>
                             <label className="block text-sm font-medium mb-2">Subject Line</label>
                             <input
-                                value={subject}
-                                onChange={(e) => setSubject(e.target.value)}
+                                value={store.subject}
+                                onChange={(e) => store.setSubject(e.target.value)}
                                 placeholder="Enter email subject..."
                                 className="w-full bg-elevated border border-border-bright rounded-lg px-4 py-2.5 text-text-primary placeholder-text-muted text-sm focus:border-accent focus:outline-none"
                             />

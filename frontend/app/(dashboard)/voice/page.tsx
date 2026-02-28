@@ -6,10 +6,12 @@ import AIEnhanceButton from "@/components/channel/AIEnhanceButton";
 import SendAllButton from "@/components/channel/SendAllButton";
 import DeliveryStatusFeed from "@/components/channel/DeliveryStatusFeed";
 import { useCampaignStore } from "@/lib/stores/campaignStore";
+import { useAuthStore } from "@/lib/stores/authStore";
 import { useEffect } from "react";
 
 export default function VoicePage() {
     const store = useCampaignStore();
+    const { usage } = useAuthStore();
 
     useEffect(() => {
         store.setChannel("voice");
@@ -25,7 +27,9 @@ export default function VoicePage() {
                 </div>
                 <div className="bg-surface border border-border rounded-lg px-4 py-2">
                     <span className="text-xs text-text-muted">Usage: </span>
-                    <span className="text-sm font-[family-name:var(--font-mono)] font-medium">3 / 10</span>
+                    <span className="text-sm font-[family-name:var(--font-mono)] font-medium">
+                        {usage?.voice_used ?? 0} / {usage?.voice_limit ?? 0}
+                    </span>
                     <span className="text-xs text-text-muted"> calls this month</span>
                 </div>
             </div>
@@ -44,7 +48,11 @@ export default function VoicePage() {
                         <div className="grid grid-cols-2 gap-3">
                             <div>
                                 <label className="block text-sm font-medium mb-2">Voice</label>
-                                <select className="w-full bg-elevated border border-border-bright rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-accent focus:outline-none">
+                                <select 
+                                    value={store.voice}
+                                    onChange={(e) => store.setVoice(e.target.value)}
+                                    className="w-full bg-elevated border border-border-bright rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-accent focus:outline-none"
+                                >
                                     <option value="female-en">Female - English</option>
                                     <option value="male-en">Male - English</option>
                                     <option value="female-hi">Female - Hindi</option>
@@ -53,7 +61,11 @@ export default function VoicePage() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium mb-2">Speed</label>
-                                <select className="w-full bg-elevated border border-border-bright rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-accent focus:outline-none">
+                                <select 
+                                    value={store.speed}
+                                    onChange={(e) => store.setSpeed(e.target.value)}
+                                    className="w-full bg-elevated border border-border-bright rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-accent focus:outline-none"
+                                >
                                     <option value="slow">Slow</option>
                                     <option value="normal">Normal</option>
                                     <option value="fast">Fast</option>

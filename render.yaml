@@ -1,0 +1,50 @@
+services:
+  # 📧 Gmail API Service
+  - type: web
+    name: agencyflow-gmail-api
+    env: node
+    rootDir: gmail-api
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 7003
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: agencyflow-redis
+          property: connectionString
+      - key: EMAIL_API_KEY
+        generateValue: true
+      - key: GMAIL_ACCOUNT_1
+        sync: false
+      - key: GMAIL_PASSWORD_1
+        sync: false
+
+  # 💬 WhatsApp API Service
+  - type: web
+    name: agencyflow-whatsapp-api
+    runtime: docker
+    rootDir: whatsapp-api
+    plan: starter # Starter plan recommended for Puppeteer memory
+    envVars:
+      - key: PORT
+        value: 7002
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: agencyflow-redis
+          property: connectionString
+      - key: WA_API_KEY
+        generateValue: true
+    disk:
+      name: whatsapp-session
+      mountPath: /app/wa-session
+      sizeGB: 1
+
+  # 🧠 Redis for SSE & Queues
+  - type: redis
+    name: agencyflow-redis
+    plan: free
+    ipAllowList: [] # Only allow internal connections
